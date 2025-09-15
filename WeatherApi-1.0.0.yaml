@@ -1,0 +1,85 @@
+swagger: '2.0'
+info:
+  title: WeatherApi
+  x-ibm-name: weatherapi
+  version: 1.0.0
+  termsOfService: https://www.weatherapi.com/terms.aspx
+x-ibm-configuration:
+  cors:
+    enabled: true
+  gateway: datapower-api-gateway
+  type: rest
+  phase: realized
+  enforced: true
+  testable: true
+  assembly:
+    execute:
+      - invoke:
+          version: 2.0.0
+          title: invoke
+          backend-type: detect
+          header-control:
+            type: blocklist
+            values: []
+          parameter-control:
+            type: allowlist
+            values: []
+          timeout: 60
+          verb: keep
+          chunked-uploads: true
+          persistent-connection: true
+          target-url: https://api.open-meteo.com/v1/forecast?latitude=35&longitude=139&hourly=temperature_2m
+          follow-redirects: false
+          inject-proxy-headers: true
+  properties:
+    target-url:
+      value: http://example.com/operation-name
+      description: The URL of the target service
+      encoded: false
+  activity-log:
+    enabled: true
+    success-content: activity
+    error-content: payload
+  servers:
+    - url: https://api.us-east-a.apiconnect.ibmappdomain.cloud/api-connect-sg/sandbox/weatherapi
+      description: ''
+      type:
+        - production
+        - development
+  oauth-servers: []
+basePath: /weatherapi
+paths:
+  /status:
+    get:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+    parameters:
+      - name: longitude
+        in: query
+        type: number
+      - name: latitude
+        required: true
+        in: query
+        type: number
+securityDefinitions:
+  clientID:
+    type: apiKey
+    in: header
+    name: X-IBM-Client-Id
+  ClientSecret:
+    type: apiKey
+    x-key-type: client_secret
+    name: X-IBM-Client-Secret
+    in: header
+security:
+  - clientID: []
+    ClientSecret: []
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
